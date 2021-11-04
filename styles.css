@@ -1,12 +1,12 @@
-h2 {
+h1 {
     color: #2c3e50;
     font-family: Helvetica, sans-serif, Arial;
     margin: 25px;
-    outline: dashed 1px black;
-    text-align: center;
+    text-align: left;
 }
 
 h2 {
+    margin: 25px;
     color: #2c3e50;
     font-family: Helvetica, sans-serif, Arial;
   }
@@ -31,6 +31,10 @@ text {
 }
 body {
     background-color: #ecf0f1;
+}
+
+notb {
+    font-weight: lighter;
 }
 
 .links line {
