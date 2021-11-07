@@ -24,7 +24,7 @@ h4 {
 p {
     color: #34495e;
     font-family: Helvetica, sans-serif, Arial;
-  }
+}
 text {
     color: #34495e;
     font-family: Helvetica, sans-serif, Arial;
@@ -33,7 +33,7 @@ body {
     background-color: #ecf0f1;
 }
 
-notb {
+.notb {
     font-weight: lighter;
 }
 
