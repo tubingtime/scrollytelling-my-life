@@ -6,10 +6,10 @@ d3.csv("timespent.csv", function(d) {
 }).then(function(wdata) {
 
   console.log(wdata);
-  let max = 180;
+  let max = 750;
   var w = 800;
   var h = 500;
-  const margin = { top : 0, bottom : 20, left : 50, right : 20}
+  const margin = { top : 10, bottom : 20, left : 50, right : 20}
   const innerWidth = w - margin.left - margin.right;
   const innerHeight = h - margin.top - margin.bottom;
 
@@ -66,7 +66,7 @@ function drawScale(){
   .attr("class", "colorLegend")
   .attr("transform", `translate(100,00)`);
   let colorLegend = d3.legendColor()
-    .shapeWidth(60)
+    .shapeWidth(80)
     .orient('horizontal')
     .cells(5)
     .scale(catScale);
