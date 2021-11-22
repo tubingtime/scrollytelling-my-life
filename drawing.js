@@ -16,28 +16,51 @@ var svg = figure.append("svg")
 var timespent = [
     {
         "task": "Work",
-        "time": "688"
-    },
-    {
-        "task": "Misc",
-        "time": "300"
-    },
-    {
-        "task": "Home",
-        "time": "96"
-    },
-    {
-        "task": "Leasure",
-        "time": "62"
-    },
-    {
-        "task": "Shopping",
-        "time": "15"
+        "time": "28.5"
     },
     {
         "task": "Social",
-        "time": "10"
-    }
+        "time": "19.5"
+    },
+    {
+        "task": "Home",
+        "time": "16"
+    },
+    {
+        "task": "Commuting",
+        "time": "5.25"
+    },
+    {
+        "task": "Self",
+        "time": "4.5"
+    },
+    {
+        "task": "Shopping",
+        "time": "2"
+    },
+]
+var classes = [
+    {
+        "task": "Data Viz",
+        "time": "9.75"
+    },
+    {
+        "task": "History",
+        "time": "6"
+    },
+    {
+        "task": "Philosophy",
+        "time": "5.5"
+    },
+    {
+        "task": "CS345",
+        "time": "5.25"
+    },
+    {
+        "task": "Personal",
+        "time": "3"
+    },
+    
 ]
 var calendarData = [
     {
@@ -284,7 +307,7 @@ function handleResize() {
 
 // scrollama event handlers
 function handleStepEnter(response) {
-    console.log(response);
+    console.log(response.index);
     // response = { element, direction, index }
 
     // add color to current step only
@@ -302,10 +325,14 @@ function handleStepEnter(response) {
             drawCalendar(calendarData);
             break;
         case 1:
-            drawBars(timespent, 50);
+            drawBars(timespent, 50, 30);
             break;
         case 2:
-            drawWaterBars(sippingData,50)
+            drawBars(classes,50,10);
+            break;
+        case 3:
+            drawWaterBars(sippingData,50);
+            break;
         default:
             break;
 
@@ -342,12 +369,13 @@ function init() {
 // kick things off
 init();
 //bar.js
-function drawBars(dataset, barPadding) {
-    let max = 750;
+function drawBars(dataset, barPadding, customMax) {
+    let max = customMax;
     const g = svg.append('g')
         .attr('transform', `translate(${margin.left}, ${margin.top})`)
     let catScale = d3.scaleOrdinal(d3.schemeCategory10)
     let xScale = d3.scaleBand()
+        .padding(.1)
         .domain(dataset.map(d => d.task))   // Data space
         .range([0, innerWidth]); // Pixel space
     let yScale = d3.scaleLinear()
@@ -360,7 +388,12 @@ function drawBars(dataset, barPadding) {
     var yAxis = d3.axisLeft(yScale);
     g.append('g').call(yAxis);
     g.append('g').call(xAxis)
-        .attr('transform', `translate(0,${innerHeight})`); // move axis to bottom
+        .attr('transform', `translate(0,${innerHeight})`) // move axis to bottom
+        .append('text')
+        .text("XPD")
+        .attr('class', 'label')
+
+        .attr("dy", 10)
 
 
     let rects = g.selectAll("rect")
@@ -388,12 +421,20 @@ function drawBars(dataset, barPadding) {
         .attr("class", "colorLegend")
         .attr("transform", `translate(${innerWidth/2},${margin.top})`);
     let colorLegend = d3.legendColor()
-        .shapeWidth(80)
+        .shapeWidth(xScale.bandwidth()/2)
         .orient('horizontal')
         .cells(5)
         .scale(catScale);
     svg.select(".colorLegend")
         .call(colorLegend);
+
+    //draw lables
+    var labely = g.append("text")
+        .attr("transform", `translate(-30,${h / 2})rotate(-90)`)
+        .text("Time spent (hours)")
+    var labelx = g.append("text")
+        .attr("transform", `translate(${innerWidth / 2 - (margin.left + margin.right)},${innerHeight + 40})`)
+        .text("Time spent (hours)")
 }
 
 function drawCalendar(dataset){
@@ -504,7 +545,7 @@ function drawWaterBars(dataset, barPadding) {
     let catScale = d3.scaleOrdinal(d3.schemeCategory10)
     let xScale = d3.scaleBand()
         .domain(dataset.map(d => d.date))   // Data space
-        .range([0, innerWidth]); // Pixel space
+        .range([10, innerWidth]); // Pixel space
     
     let paddedExtent = [
         d3.min(dataset.map(d => d.date)), 
@@ -512,7 +553,7 @@ function drawWaterBars(dataset, barPadding) {
     ];
     let xScaleTime = d3.scaleTime()
         .domain(paddedExtent)   // Data space
-        .range([0, innerWidth]); // Pixel space 
+        .range([10, innerWidth]); // Pixel space 
     let yScale = d3.scaleLinear()
         .domain([0, max])   // Data space
         .range([innerHeight, 0]); // Pixel space
@@ -521,7 +562,8 @@ function drawWaterBars(dataset, barPadding) {
     var xAxis = d3.axisBottom(xScaleTime);
 
     var yAxis = d3.axisLeft(yScale);
-    g.append('g').call(yAxis);
+    g.append('g').call(yAxis)
+    .attr('transform', `translate(10,0)`); //temp margin
     g.append('g').call(xAxis)
         .attr('transform', `translate(0,${innerHeight})`); // move axis to bottom
 
@@ -555,4 +597,12 @@ function drawWaterBars(dataset, barPadding) {
         .scale(catScale);
     svg.select(".colorLegend")
         .call(colorLegend);
+
+    //draw lables
+    var labely = g.append("text")
+        .attr("transform", `translate(-30,${h / 2})rotate(-90)`)
+        .text("Water Consumed (oz)")
+    var labelx = g.append("text")
+        .attr("transform", `translate(${innerWidth / 2 - (margin.left + margin.right)},${innerHeight + 40})`)
+        .text("Date")
 }
