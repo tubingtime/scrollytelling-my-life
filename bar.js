@@ -64,7 +64,7 @@ d3.csv("timespent.csv", function(d) {
 function drawScale(){
   svg.append("g")
   .attr("class", "colorLegend")
-  .attr("transform", `translate(100,00)`);
+  .attr("transform", `translate(${innerWidth/2},00)`);
   let colorLegend = d3.legendColor()
     .shapeWidth(80)
     .orient('horizontal')
