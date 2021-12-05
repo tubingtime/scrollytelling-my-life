@@ -1,11 +1,11 @@
 # scrollytelling-my-life
 
 todo:
- - Horizontal bar chart comparison lines []
+ - Horizontal bar chart comparison lines [x]
  - Time spent for a single day []
  - Introduction Section []
  - Reflection Footer []
- - <s>  Mobile Optimization [] </s>
+ - Mobile Optimization [sort of]
  - <s>  Smooth Scrollbar [] </s>
  - Interaction [x]
  - Annotations [x]

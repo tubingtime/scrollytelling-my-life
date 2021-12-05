@@ -6,11 +6,9 @@ var step = article.selectAll(".step");
 var w = window.innerWidth / 1.2;
 var h = window.innerHeight / 1.7;
 const margin = { top: 40, bottom: 60, left: 50, right: 50 }
-const innerWidth = w - margin.left - margin.right;
-const innerHeight = h - margin.top - margin.bottom;
-var svg = figure.append("svg")
-    .attr("width", w)
-    .attr("height", h);
+var svgInnerWidth = w - margin.left - margin.right;
+var svgInnerHeight = h - margin.top - margin.bottom;
+var svg = figure.append("svg");
 let currentStep = {
     "index" : -1
 }
@@ -297,14 +295,19 @@ function handleResize() {
 
     var figureHeight = window.innerHeight / 1.7;
     var figureMarginTop = (window.innerHeight - figureHeight) / 2;
-
     figure
         .style("height", figureHeight + "px")
         .style("top", figureMarginTop + "px"); // TODO: update figure svg on resize
-    // svg
-    //     .attr("height", figureHeight)
-    //     .attr("width", window.innerWidth / 1.2);
-    // handleStepEnter(currentStep);
+    
+
+    w = figure.style("width").slice(0,-2);
+    h = Math.floor(window.innerHeight / 1.7);
+    svgInnerWidth = w - margin.left - margin.right;
+    svgInnerHeight = h - margin.top - margin.bottom;
+    svg
+        .attr("height", h)
+        .attr("width", w);
+    handleStepEnter(currentStep);
     // 3. tell scrollama to update new element dimensions
     scroller.resize();
 }
@@ -321,7 +324,7 @@ function handleStepEnter(response) {
     step.classed("is-active", function (d, i) {
         return i === response.index;
     });
-
+    console.log("hereye?"+currentStep.index)
     // update graphic based on step
     figure.select('svg').selectAll('*').remove();
     // figure.select("p").text(response.index + 1);
@@ -342,7 +345,7 @@ function handleStepEnter(response) {
             drawBars(timespent, 50, 30);
             break;
         case 5:
-            drawBars2(classes,50,10);
+            drawBarsWork(classes,50,10);
             break;
         case 7:
             drawWaterBars(sippingData,50);
@@ -382,7 +385,18 @@ function init() {
 
 // kick things off
 init();
-//bar.js
+
+function drawYGrid(yAxis, gElem){
+    var yAxisGrid = yAxis.ticks().tickSizeOuter(0)
+        .tickSize(-svgInnerWidth,0)
+        .tickFormat("");
+    gElem.append("g")
+        .classed("yGrid",true)
+        .call(yAxisGrid)
+        .select(".domain")
+        .remove();
+}
+
 function drawBars(dataset, barPadding, customMax) {
     let max = customMax;
     const g = svg.append('g')
@@ -391,10 +405,10 @@ function drawBars(dataset, barPadding, customMax) {
     let xScale = d3.scaleBand()
         .padding(.1)
         .domain(dataset.map(d => d.task))   // Data space
-        .range([0, innerWidth]); // Pixel space
+        .range([0, svgInnerWidth]); // Pixel space
     let yScale = d3.scaleLinear()
         .domain([0, max])   // Data space
-        .range([innerHeight, 0]); // Pixel space
+        .range([svgInnerHeight, 0]); // Pixel space
 
 
     var xAxis = d3.axisBottom(xScale);
@@ -402,13 +416,13 @@ function drawBars(dataset, barPadding, customMax) {
     var yAxis = d3.axisLeft(yScale);
     g.append('g').call(yAxis);
     g.append('g').call(xAxis)
-        .attr('transform', `translate(0,${innerHeight})`) // move axis to bottom
+        .attr('transform', `translate(0,${svgInnerHeight})`) // move axis to bottom
         .append('text')
         .text("XPD")
         .attr('class', 'label')
-
-        .attr("dy", 10)
-
+        .attr("dy", 10);
+    
+    drawYGrid(yAxis,g);
 
     let rects = g.selectAll("rect")
         .data(dataset)
@@ -424,7 +438,7 @@ function drawBars(dataset, barPadding, customMax) {
             return yScale(d.time)
         })
         .attr("height", function (d) {
-            return innerHeight - yScale(d.time);
+            return svgInnerHeight - yScale(d.time);
         })
         .attr("width", xScale.bandwidth()) // this is problematic
         .attr("fill", function (d) {
@@ -433,7 +447,7 @@ function drawBars(dataset, barPadding, customMax) {
     // draw scale
     svg.append("g")
         .attr("class", "colorLegend")
-        .attr("transform", `translate(${innerWidth/2},${margin.top})`);
+        .attr("transform", `translate(${svgInnerWidth/2},${margin.top})`);
     let colorLegend = d3.legendColor()
         .shapeWidth(xScale.bandwidth()/2)
         .orient('horizontal')
@@ -447,11 +461,11 @@ function drawBars(dataset, barPadding, customMax) {
         .attr("transform", `translate(-30,${h / 2})rotate(-90)`)
         .text("Time spent (hours)")
     var labelx = g.append("text")
-        .attr("transform", `translate(${innerWidth / 2 - (margin.left + margin.right)},${innerHeight + 40})`)
+        .attr("transform", `translate(${svgInnerWidth / 2 - (margin.left + margin.right)},${svgInnerHeight + 40})`)
         .text("Task")
 }
 
-function drawBars2(dataset, barPadding, customMax) {
+function drawBarsWork(dataset, barPadding, customMax) {
     let max = customMax;
     const g = svg.append('g')
         .attr('transform', `translate(${margin.left}, ${margin.top})`)
@@ -459,10 +473,10 @@ function drawBars2(dataset, barPadding, customMax) {
     let xScale = d3.scaleBand()
         .padding(.1)
         .domain(dataset.map(d => d.task))   // Data space
-        .range([0, innerWidth]); // Pixel space
+        .range([0, svgInnerWidth]); // Pixel space
     let yScale = d3.scaleLinear()
         .domain([0, max])   // Data space
-        .range([innerHeight, 0]); // Pixel space
+        .range([svgInnerHeight, 0]); // Pixel space
 
 
     var xAxis = d3.axisBottom(xScale);
@@ -470,14 +484,14 @@ function drawBars2(dataset, barPadding, customMax) {
     var yAxis = d3.axisLeft(yScale);
     g.append('g').call(yAxis);
     g.append('g').call(xAxis)
-        .attr('transform', `translate(0,${innerHeight})`) // move axis to bottom
+        .attr('transform', `translate(0,${svgInnerHeight})`) // move axis to bottom
         .append('text')
         .text("XPD")
         .attr('class', 'label')
 
         .attr("dy", 10)
 
-
+    drawYGrid(yAxis,g);
     let rects = g.selectAll("rect")
         .data(dataset)
         .enter()
@@ -492,7 +506,7 @@ function drawBars2(dataset, barPadding, customMax) {
             return yScale(d.time)
         })
         .attr("height", function (d) {
-            return innerHeight - yScale(d.time);
+            return svgInnerHeight - yScale(d.time);
         })
         .attr("width", xScale.bandwidth()) // this is problematic
         .attr("fill", function (d) {
@@ -503,7 +517,7 @@ function drawBars2(dataset, barPadding, customMax) {
         .attr("transform", `translate(-30,${h / 2})rotate(-90)`)
         .text("Time spent (hours)")
     var labelx = g.append("text")
-        .attr("transform", `translate(${innerWidth / 2 - (margin.left + margin.right)},${innerHeight + 40})`)
+        .attr("transform", `translate(${svgInnerWidth / 2 - (margin.left + margin.right)},${svgInnerHeight + 40})`)
         .text("Type of Work")
 }
 
@@ -520,16 +534,16 @@ function drawCalendar(dataset, highlight) {
         .range(["#3498db", "#2ecc71", "#d35400", "#8e44ad"])
     let xScale = d3.scaleLinear()
         .domain([0, 7])   // Data space
-        .range([0, innerWidth]); // Pixel space
+        .range([0, svgInnerWidth]); // Pixel space
     let xScaleBand = d3.scaleBand()
         .domain([0, 1, 2, 3, 4, 5, 6])   // Data space
-        .range([0, innerWidth]); // Pixel space
+        .range([0, svgInnerWidth]); // Pixel space
     let yScale = d3.scaleLinear()
         .domain([4, 0])   // Data space
-        .range([innerHeight, 0]); // Pixel space
+        .range([svgInnerHeight, 0]); // Pixel space
     let yScaleBand = d3.scaleBand()
         .domain([3, 2, 1, 0])   // Data space
-        .range([innerHeight, 0]); // Pixel space
+        .range([svgInnerHeight, 0]); // Pixel space
 
     var xAxis = d3.axisBottom(xScale);
     var yAxis = d3.axisLeft(yScale);
@@ -649,10 +663,10 @@ function drawCalendar(dataset, highlight) {
     let yLabels = g.selectAll("yLabel")
     svg.append("g")
         .attr("class", "colorLegend")
-        .attr("transform", `translate(${innerWidth / 2 - (innerWidth / 12)},${innerHeight + 60})`);
+        .attr("transform", `translate(${svgInnerWidth / 2 - (svgInnerWidth / 12)},${svgInnerHeight + 60})`);
 
     let colorLegend = d3.legendColor()
-        .shapeWidth(innerWidth / 12)
+        .shapeWidth(svgInnerWidth / 12)
         .orient('horizontal')
         .scale(myColor);
     svg.select(".colorLegend")
@@ -663,11 +677,11 @@ function drawCalendar(dataset, highlight) {
 function drawWaterBars(dataset, barPadding) {
     let max = 200;
     const g = svg.append('g')
-        .attr('transform', `translate(${margin.left}, ${margin.top})`)
+        .attr('transform', `translate(${margin.left+5}, ${margin.top})`)
     let catScale = d3.scaleOrdinal(d3.schemeCategory10)
     let xScale = d3.scaleBand()
         .domain(dataset.map(d => d.date))   // Data space
-        .range([10, innerWidth]); // Pixel space
+        .range([10, svgInnerWidth]); // Pixel space
     
     let paddedExtent = [
         d3.min(dataset.map(d => d.date)), 
@@ -675,28 +689,28 @@ function drawWaterBars(dataset, barPadding) {
     ];
     let xScaleTime = d3.scaleTime()
         .domain(paddedExtent)   // Data space
-        .range([10, innerWidth]); // Pixel space 
+        .range([0, svgInnerWidth]); // Pixel space 
     let yScale = d3.scaleLinear()
         .domain([0, max])   // Data space
-        .range([innerHeight, 0]); // Pixel space
+        .range([svgInnerHeight, 0]); // Pixel space
 
 
     var xAxis = d3.axisBottom(xScaleTime);
 
     var yAxis = d3.axisLeft(yScale);
-    g.append('g').call(yAxis)
-    .attr('transform', `translate(10,0)`); //temp margin
+    g.append('g')
+        .call(yAxis)
     g.append('g').call(xAxis)
-        .attr('transform', `translate(0,${innerHeight})`); // move axis to bottom
-
-
+        .attr('transform', `translate(0,${svgInnerHeight})`); // move axis to bottom
+    drawYGrid(yAxis,g);
+    
     let rects = g.selectAll("rect")
         .data(dataset)
         .enter()
         .append("rect");
 
     rects.attr("x", function (d) {
-        return xScaleTime(d.date) + 0; //not sure why i need + 30 here (i think it has to do with barwidth func )
+        return xScaleTime(d.date); 
     })
         .attr("y", function (d) {
             // console.log(d.time)
@@ -704,14 +718,14 @@ function drawWaterBars(dataset, barPadding) {
             return yScale(d.water)
         })
         .attr("height", function (d) {
-            return innerHeight - yScale(d.water);
+            return svgInnerHeight - yScale(d.water);
         })
         .attr("width", xScale.bandwidth()) // this is problematic
         .attr("fill", "steelblue");
     // draw scale
     svg.append("g")
         .attr("class", "colorLegend")
-        .attr("transform", `translate(${innerWidth/2},${margin.top})`);
+        .attr("transform", `translate(${svgInnerWidth/2},${margin.top})`);
     let colorLegend = d3.legendColor()
         .shapeWidth(80)
         .orient('horizontal')
@@ -722,19 +736,22 @@ function drawWaterBars(dataset, barPadding) {
 
     //draw lables
     var labely = g.append("text")
-        .attr("transform", `translate(-30,${h / 2})rotate(-90)`)
+        .attr("transform", `translate(-40,${h / 2})rotate(-90)`)
         .text("Water Consumed (oz)")
     var labelx = g.append("text")
-        .attr("transform", `translate(${innerWidth / 2 - (margin.left + margin.right)},${innerHeight + 40})`)
+        .attr("transform", `translate(${svgInnerWidth / 2 - (margin.left + margin.right)},${svgInnerHeight + 40})`)
         .text("Date")
     let NAS = g.append("rect")
-        .attr("x",10)
+        .attr("x",0)
         .attr("y",yScale(125))
-        .attr("width",innerWidth)
+        .attr("width",svgInnerWidth)
         .attr("height",2)
         .attr("fill","#c0392b");
-    var labelx = g.append("text")
+    var NASLabel = g.append("text")
         .style("fill", "#c0392b")
         .attr("transform", `translate(${100},${yScale(125)-2})`)
         .text("NAS reccomended amount for men")
+
+
+
 }
