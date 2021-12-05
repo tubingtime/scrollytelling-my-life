@@ -5,9 +5,13 @@ todo:
  - Time spent for a single day []
  - Introduction Section []
  - Reflection Footer []
- - Mobile Optimization []
- - Smooth Scrollbar []
- - Interaction []
-Optional:
-    - animation []
-    - audio []
+ ~~ - Mobile Optimization [] ~~
+ ~~ - Smooth Scrollbar [] ~~
+ - Interaction [x]
+ - Annotations [x]
+
+ - Optional:
+        - animation []
+        - audio []
+        - work breakdown interaction html navigation []
+        - fix figure width going off screen []

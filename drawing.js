@@ -1,5 +1,3 @@
-
-// using d3 for convenience
 var main = d3.select("main");
 var scrolly = main.select("#scrolly");
 var figure = scrolly.select("figure");
@@ -13,6 +11,9 @@ const innerHeight = h - margin.top - margin.bottom;
 var svg = figure.append("svg")
     .attr("width", w)
     .attr("height", h);
+let currentStep = {
+    "index" : -1
+}
 var timespent = [
     {
         "task": "Work",
@@ -291,8 +292,8 @@ var scroller = scrollama();
 // generic window resize listener event
 function handleResize() {
     // 1. update height of step elements
-    var stepH = Math.floor(window.innerHeight * 0.75);
-    step.style("height", stepH + "px");
+    var stepH = Math.floor(window.innerHeight * 0.5);
+    step.style("min-height", stepH + "px");
 
     var figureHeight = window.innerHeight / 1.7;
     var figureMarginTop = (window.innerHeight - figureHeight) / 2;
@@ -300,14 +301,20 @@ function handleResize() {
     figure
         .style("height", figureHeight + "px")
         .style("top", figureMarginTop + "px"); // TODO: update figure svg on resize
-
+    // svg
+    //     .attr("height", figureHeight)
+    //     .attr("width", window.innerWidth / 1.2);
+    // handleStepEnter(currentStep);
     // 3. tell scrollama to update new element dimensions
     scroller.resize();
 }
 
 // scrollama event handlers
 function handleStepEnter(response) {
-    console.log(response.index);
+    if (response.index == -1){
+        return;
+    }
+    currentStep.index = response.index;
     // response = { element, direction, index }
 
     // add color to current step only
@@ -318,19 +325,26 @@ function handleStepEnter(response) {
     // update graphic based on step
     figure.select('svg').selectAll('*').remove();
     // figure.select("p").text(response.index + 1);
-    svg.append("rect")
-        .attr("x", 0).attr("y", 0).attr("width", 5).attr("height", (response.index + 1) * h/4).attr("fill", "black");
     switch (response.index) {
         case 0:
-            drawCalendar(calendarData);
+            drawCalendar(calendarData, 0);
             break;
         case 1:
-            drawBars(timespent, 50, 30);
+            drawCalendar(calendarData, 1);
             break;
         case 2:
-            drawBars2(classes,50,10);
+            drawCalendar(calendarData, 2);
             break;
         case 3:
+            drawCalendar(calendarData, 3);
+            break;
+        case 4:
+            drawBars(timespent, 50, 30);
+            break;
+        case 5:
+            drawBars2(classes,50,10);
+            break;
+        case 7:
             drawWaterBars(sippingData,50);
             break;
         default:
@@ -493,30 +507,30 @@ function drawBars2(dataset, barPadding, customMax) {
         .text("Type of Work")
 }
 
-function drawCalendar(dataset){
+function drawCalendar(dataset, highlight) {
 
     let catScale = d3.scaleOrdinal(d3.schemeCategory10)
     let myColorMap = {
-        Calm : "#3498db",
-        Excited : "#2ecc71",
-        Groggy : "#d35400",
-        Anxious : "#8e44ad",
+        Calm: "#3498db",
+        Excited: "#2ecc71",
+        Groggy: "#d35400",
+        Anxious: "#8e44ad",
     };
-    var myColor = d3.scaleOrdinal().domain(["Calm","Excited","Groggy","Anxious"])
-  .range(["#3498db","#2ecc71","#d35400","#8e44ad"])
+    var myColor = d3.scaleOrdinal().domain(["Calm", "Excited", "Groggy", "Anxious"])
+        .range(["#3498db", "#2ecc71", "#d35400", "#8e44ad"])
     let xScale = d3.scaleLinear()
-        .domain([0,7])   // Data space
+        .domain([0, 7])   // Data space
         .range([0, innerWidth]); // Pixel space
     let xScaleBand = d3.scaleBand()
-        .domain([0,1,2,3,4,5,6])   // Data space
+        .domain([0, 1, 2, 3, 4, 5, 6])   // Data space
         .range([0, innerWidth]); // Pixel space
     let yScale = d3.scaleLinear()
         .domain([4, 0])   // Data space
         .range([innerHeight, 0]); // Pixel space
     let yScaleBand = d3.scaleBand()
-        .domain([3,2,1,0])   // Data space
+        .domain([3, 2, 1, 0])   // Data space
         .range([innerHeight, 0]); // Pixel space
-    
+
     var xAxis = d3.axisBottom(xScale);
     var yAxis = d3.axisLeft(yScale);
     const g = svg.append('g')
@@ -528,71 +542,123 @@ function drawCalendar(dataset){
         .data(dataset)
         .enter()
         .append("rect");
-    
-    rects.attr("x", function(d){
-            // console.log((d.date[1]-1 )%7 +" " + (d.date[1]));
-            return xScale((d.date[1]-1 )%7);
-        })
-        .attr("y", function(d){
-            let weekNum = Math.floor(d.date[1]/8) // todo: /7
-            weekNum = weekNum *2;
-            if (weekNum >0){
-                weekNum+=.1;
+
+    rects.attr("x", function (d) {
+        return xScale((d.date[1] - 1) % 7);
+    })
+        .attr("y", function (d) {
+            let weekNum = Math.floor(d.date[1] / 8)
+            weekNum = weekNum * 2;
+            if (weekNum > 0) {
+                weekNum += .1;
             }
-            console.log(weekNum)
-            if (d.dayOrNight == "day"){
+            if (d.dayOrNight == "day") {
                 return yScale(weekNum)
             }
             else {
-                return yScale(weekNum+1)
+                return yScale(weekNum + 1)
             }
         })
-        .attr("height",yScaleBand.bandwidth())
+        .attr("height", yScaleBand.bandwidth())
         .attr("width", xScaleBand.bandwidth())
-        .attr("fill", function(d){
+        .attr("fill", function (d) {
             return myColor(d.mood);
         })
-        .attr("debug",function(d){
-            return d.date; //todo: remove
-        });
+        // .attr("debug", function (d) {
+        //     return d.date; //todo: remove
+        // })
+        .attr("opacity",function(d){
+            switch (highlight){
+                case 1:
+                    if (d.date[1] < 4) {return "1";}
+                    else {return ".5"}
+                    break;
+                case 2:
+                    if (d.date[1] >= 4 && d.date[1] < 8){return "1";}
+                    else {return ".5"}
+                    break;
+                case 3:
+                    if (d.date[1] >= 8 && d.date[1] < 11){return "1";}
+                    else {return ".5"}
+                    break;
+                default:
+                    return "1"
+                    break;
+            }
+        })
+        .attr("original_oppy",function(d){ // oppy = opacity
+            switch (highlight){
+                case 1:
+                    if (d.date[1] < 4) {return "1";}
+                    else {return ".5"}
+                    break;
+                case 2:
+                    if (d.date[1] >= 4 && d.date[1] < 8){return "1";}
+                    else {return ".5"}
+                    break;
+                case 3:
+                    if (d.date[1] >= 8 && d.date[1] < 11){return "1";}
+                    else {return ".5"}
+                    break;
+                default:
+                    return "1"
+                    break;
+            }
+        })
+        .style("stroke-width","5")
+        .on('mouseover', function () {
+            d3.select(this).transition()
+                .duration('50')
+                .attr('opacity', '.85');
+        })
+        .on('mouseout', function () {
+            d3.select(this).transition()
+            .duration('50')
+            .attr('opacity', d3.select(this).attr("original_oppy"))
         
+        })
+        .append("svg:title") 
+            .text(function (d) {
+                return (d.date[0]+"/"+d.date[1]+"/"+d.date[2]);
+            });
+
+
     let labels = g.selectAll("xLabel")
         .data(daysOfWeek)
         .enter()
         .append("text");
     labels
-        .attr("x", function(d,i){
-            console.log(d.day + " : " + i);
-            return xScale(i)+ xScaleBand.bandwidth()/2;
+        .attr("x", function (d, i) {
+            return xScale(i) + xScaleBand.bandwidth() / 2;
         })
-        .attr("y",-5)
-        .text(function(d){return d.day;})
-        .style("text-anchor","middle");
+        .attr("y", -5)
+        .text(function (d) { return d.day; })
+        .style("text-anchor", "middle");
     let xLabels = g.selectAll("yLabel")
         .data(dayAndNight)
         .enter()
         .append("text");
     xLabels
         .attr("x", -5)
-        .attr("y", function(d,i){
-            if (i >= 2){i+=.1}
-            console.log(yScale(i))
-            return yScale(i+.5);
+        .attr("y", function (d, i) {
+            if (i >= 2) { i += .1 }
+            return yScale(i + .5);
         })
-        .style("text-anchor","end")
-        .text(function(d){return d})
+        .style("text-anchor", "end")
+        .text(function (d) { return d })
     let yLabels = g.selectAll("yLabel")
     svg.append("g")
         .attr("class", "colorLegend")
-        .attr("transform", `translate(${innerWidth/2-(innerWidth/12)},${innerHeight+60})`);
+        .attr("transform", `translate(${innerWidth / 2 - (innerWidth / 12)},${innerHeight + 60})`);
 
     let colorLegend = d3.legendColor()
-        .shapeWidth(innerWidth/12)
+        .shapeWidth(innerWidth / 12)
         .orient('horizontal')
         .scale(myColor);
     svg.select(".colorLegend")
         .call(colorLegend);
     
+
 }
 function drawWaterBars(dataset, barPadding) {
     let max = 200;
