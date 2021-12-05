@@ -6,7 +6,7 @@ todo:
  - Introduction Section []
  - Reflection Footer []
  - <s>  Mobile Optimization [] </s>
- - <s> - Smooth Scrollbar [] ~~ </s>
+ - <s>  Smooth Scrollbar [] </s>
  - Interaction [x]
  - Annotations [x]
 
