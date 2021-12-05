@@ -11,7 +11,7 @@ todo:
  - Annotations [x]
 
  - Optional:
-        - animation []
-        - audio []
-        - work breakdown interaction html navigation []
-        - fix figure width going off screen []
+    - animation []
+    - audio []
+    - work breakdown interaction html navigation []
+    - fix figure width going off screen []
