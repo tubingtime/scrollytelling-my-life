@@ -8,10 +8,11 @@ todo:
  - Mobile Optimization [sort of]
  - <s>  Smooth Scrollbar [] </s>
  - Interaction [x]
- - Annotations [x]
+ - Annotations []
 
  - Optional:
     - animation []
     - audio []
     - work breakdown interaction html navigation []
     - fix figure width going off screen []
+    - image zoom

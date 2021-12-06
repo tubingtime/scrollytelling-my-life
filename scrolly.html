@@ -106,6 +106,7 @@
       
       <section id="intro">
         <p>Hi! My name is TJ.<br> I decided to collect data on myself for a couple weeks to learn about myself but mostly to make some cool graphs out of it.<br>
+          <br>
           Start scrolling to see them!
         </p>
       </section>
@@ -152,13 +153,14 @@
             </p>
           </div>
           <div class="step" data-step="7">
-            <p class="step__header">Typical Weekday <br>(Nov 8 - Nov 14)</p>
-            <p class="step__desc">This is a breakdown of that work category seen in the last section <br>
-              As you can see my biggest time sink was this class :p
-              <br> The personal category was me applying for jobs and maintaining my home media server.
+            <p class="step__header">Actual Data</p>
+            <p class="step__desc">This is a screenshot of Toggltrack, the tool I used to collect the temporal
+              data.
+              <br>Some of the small gaps are because I didn't record my commute time because I knew it's about 30 minutes each day.
+              <br>But most of the gaps are because I forgot to record the data.
             </p>
           </div>
-          <div class="step" data-step="7">
+          <div class="step" data-step="8">
             <p class="step__header">Water Consumption </p>
             <p class="step__desc">How much water I drank each day.
               <br>I think that I'm falling below the recommended amount because I get my water from food and other drinks.
@@ -171,20 +173,36 @@
             </p>
           </div>
         </article>
-
         <figure>
         </figure>
       </section>
 
-      <section id="outro"></section>
+      <section id="outro">
+        <h2><u>Reflection</u></h2>
+        <br>
+        <p>So what did I learn from all this?
+          Well for one data collection is not easy! I was planning on collecting data for a whole month
+          but I'm glad I limited it to only two weeks. Although it would be a lot more insightful to have a month
+          or a years worth of data. It's hard to observe patterns in my life with such limited data. If I could set
+          up an easy way to collect data it might be possible to get a years worth. With that being said here's what
+          patterns I did notice.
+          <br>
+          Doing this also made me wonder how it is people do 60-80 hour workdays!
+          During the week I collected data I worked for only about 30 hours and I felt like any more
+          and it would be too much.
+          <br>
+
+        </p>
+      </section>
     </main>
 
     <!-- <div class='debug'></div> -->
-    <script src="https://unpkg.com/d3@5.9.1/dist/d3.min.js"></script>
+    <script src="https://unpkg.com/d3@7.2.0/dist/d3.min.js"></script>
     <script src="https://unpkg.com/intersection-observer@0.5.1/intersection-observer.js"></script>
     <script src="stickyfill.min.js"></script>
     <script src="scrollama.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js"></script>
     <script src="drawing.js"></script>
   </body>
 </html>

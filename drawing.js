@@ -12,7 +12,34 @@ var svg = figure.append("svg");
 let currentStep = {
     "index" : -1
 }
-var timespent = [
+const timeSpentWithSleep = [
+    {
+        "task": "Work",
+        "time": "28.5"
+    },
+    {
+        "task": "Social",
+        "time": "19.5"
+    },
+    {
+        "task": "Home",
+        "time": "16"
+    },
+    {
+        "task": "Commuting",
+        "time": "5.25"
+    },
+    {
+        "task": "Self",
+        "time": "4.5"
+    },
+    {
+        "task": "Shopping",
+        "time": "2"
+    },
+]
+
+const timespent = [
     {
         "task": "Work",
         "time": "28.5"
@@ -275,7 +302,8 @@ var sippingData = [
         "water": "0"
     },
 ]
-var parseTime = d3.timeParse("%m/%d/%y");
+const parseTime = d3.timeParse("%m/%d/%y");
+const timeFormat = d3.timeFormat("%d-%b-%y");
 for (d in sippingData){
     sippingData[d].date = parseTime(sippingData[d].date);
 }
@@ -390,7 +418,8 @@ function init() {
 init();
 
 function drawYGrid(yAxis, gElem){
-    var yAxisGrid = yAxis.ticks().tickSizeOuter(0)
+    var yAxisGrid = yAxis.ticks()
+        .tickSizeOuter(0)
         .tickSize(-svgInnerWidth,0)
         .tickFormat("");
     gElem.append("g")
@@ -753,8 +782,46 @@ function drawWaterBars(dataset, barPadding) {
         .attr("fill","#c0392b");
     var NASLabel = g.append("text")
         .style("fill", "#c0392b")
-        .attr("transform", `translate(${100},${yScale(125)-2})`)
+        .attr("transform", `translate(${100},${yScale(125) - 2})`)
         .text("NAS reccomended amount for men")
+    const annotations = [{
+        note: {
+            label: "I forgot to record data here.",
+            title: "Note:"
+        },
+        //can use x, y directly instead of data
+        data: { date: "11/06/21", close: 50 },
+        dy: -80,
+        dx: xScale.bandwidth()/3,
+        subject: {
+            width: xScale.bandwidth()*2+(xScale.bandwidth()*.11),
+            height: 100
+        }
+    }]
+    console.log(xScale.padding())
+    //draw annotations
+    var makeAnnotations = d3.annotation()
+        .editMode(false)
+        //also can set and override in the note.padding property
+        //of the annotation object
+        .notePadding(15)
+        .type(d3.annotationCalloutRect)
+        //accessors & accessorsInverse not needed
+        //if using x, y in annotations JSON
+        .accessors({
+            x: d => xScaleTime(parseTime(d.date)),
+            y: d => yScale(d.close),
+        })
+        .accessorsInverse({
+            date: d => timeFormat(xScaleTime.invert(d.x)),
+            close: d => yScale.invert(d.y)
+        })
+        .annotations(annotations)
+
+    g.append("g")
+        .attr("class", "annotation-group")
+        .call(makeAnnotations)
+
 
 
 
