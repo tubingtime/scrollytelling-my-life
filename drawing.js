@@ -347,6 +347,9 @@ function handleStepEnter(response) {
         case 5:
             drawBarsWork(classes,50,10);
             break;
+        case 6:
+            insertJPG("toggltrack1.jpg");
+            break;
         case 7:
             drawWaterBars(sippingData,50);
             break;
@@ -452,6 +455,7 @@ function drawBars(dataset, barPadding, customMax) {
         .shapeWidth(xScale.bandwidth()/2)
         .orient('horizontal')
         .cells(5)
+        .labelOffset(-28)
         .scale(catScale);
     svg.select(".colorLegend")
         .call(colorLegend);
@@ -754,4 +758,12 @@ function drawWaterBars(dataset, barPadding) {
 
 
 
+}
+function insertJPG(imageUrl){
+    svg.append("image")
+    .attr("xlink:href","toggltrack.jpg")
+    .attr("width","100%")
+    .attr("height","100%");
+
+    figure.attr("background-color","red")
 }

@@ -2,8 +2,8 @@
 
 todo:
  - Horizontal bar chart comparison lines [x]
- - Time spent for a single day []
- - Introduction Section []
+ - Time spent for a single day [x]
+ - Introduction Section [x]
  - Reflection Footer []
  - Mobile Optimization [sort of]
  - <s>  Smooth Scrollbar [] </s>
