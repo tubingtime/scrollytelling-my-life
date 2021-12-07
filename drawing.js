@@ -783,7 +783,8 @@ function drawWaterBars(dataset, barPadding) {
     var NASLabel = g.append("text")
         .style("fill", "#c0392b")
         .attr("transform", `translate(${100},${yScale(125) - 2})`)
-        .text("NAS reccomended amount for men")
+        .text("NAS reccomended amount for men");
+    //annotations
     const annotations = [{
         note: {
             label: "I forgot to record data here.",
@@ -791,11 +792,11 @@ function drawWaterBars(dataset, barPadding) {
         },
         //can use x, y directly instead of data
         data: { date: "11/06/21", close: 50 },
-        dy: -80,
+        dy: -175,
         dx: xScale.bandwidth()/3,
         subject: {
             width: xScale.bandwidth()*2+(xScale.bandwidth()*.11),
-            height: 100
+            height: yScale(10)-yScale(60)
         }
     }]
     console.log(xScale.padding())
