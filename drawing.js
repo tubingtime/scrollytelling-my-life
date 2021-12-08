@@ -542,9 +542,7 @@ function drawBarsWork(dataset, barPadding, customMax) {
             return svgInnerHeight - yScale(d.time);
         })
         .attr("width", xScale.bandwidth()) // this is problematic
-        .attr("fill", function (d) {
-            return "steelblue";
-        })
+        .attr("fill", "#1f77b4")
     //draw lables
     var labely = g.append("text")
         .attr("transform", `translate(-30,${h / 2})rotate(-90)`)
