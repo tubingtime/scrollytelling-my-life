@@ -542,9 +542,7 @@ function drawBarsWork(dataset, barPadding, customMax) {
             return svgInnerHeight - yScale(d.time);
         })
         .attr("width", xScale.bandwidth()) // this is problematic
-        .attr("fill", function (d) {
-            return "steelblue";
-        })
+        .attr("fill", "#1f77b4")
     //draw lables
     var labely = g.append("text")
         .attr("transform", `translate(-30,${h / 2})rotate(-90)`)
@@ -653,15 +651,25 @@ function drawCalendar(dataset, highlight) {
             }
         })
         .style("stroke-width","5")
-        .on('mouseover', function () {
+        .on('mouseover', function (response) {
+            // console.log(response)
             d3.select(this).transition()
                 .duration('50')
                 .attr('opacity', '.85');
+            // svg.append("g")
+            //     .attr("id","tooltip")
+            //     .append("rect")
+            //     .attr("x",response.layerX)
+            //     .attr("y",50)
+            //     .attr("height",50)
+            //     .attr("width",50)
+            //     .attr("fill","red")
         })
         .on('mouseout', function () {
             d3.select(this).transition()
             .duration('50')
-            .attr('opacity', d3.select(this).attr("original_oppy"))
+            .attr('opacity', d3.select(this).attr("original_oppy"));
+            svg.select("#tooltip rect").remove()
         
         })
         .append("svg:title") 
@@ -787,16 +795,15 @@ function drawWaterBars(dataset, barPadding) {
     //annotations
     const annotations = [{
         note: {
-            label: "I forgot to record data here.",
-            title: "Note:"
+            label: "I forgot to record data here."
         },
         //can use x, y directly instead of data
-        data: { date: "11/06/21", close: 50 },
-        dy: -175,
+        data: { date: "11/06/21", close: 0 },
+        dy: -yScale(125),
         dx: xScale.bandwidth()/3,
         subject: {
             width: xScale.bandwidth()*2+(xScale.bandwidth()*.11),
-            height: yScale(10)-yScale(60)
+            height: yScale(60)-yScale(0)
         }
     }]
     console.log(xScale.padding())
@@ -829,9 +836,9 @@ function drawWaterBars(dataset, barPadding) {
 }
 function insertJPG(imageUrl){
     svg.append("image")
+    .attr("id","imgZoom")
+    .attr("zoom","300%")
     .attr("xlink:href","toggltrack.jpg")
     .attr("width","100%")
     .attr("height","100%");
-
-    figure.attr("background-color","red")
 }

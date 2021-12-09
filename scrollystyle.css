@@ -163,3 +163,19 @@ nav {
 .annotation-note  {
   color: black;
 }
+text {
+  font-size: auto;
+}
+.tick text {
+  font-size:small;
+}
+.label {
+  font-size:small;
+}
+#zoom-img {
+  width: 100%;
+  height: 100%;
+  background: url("toggltrack.jpg");
+  background-position: center;
+  background-size: cover;
+}
