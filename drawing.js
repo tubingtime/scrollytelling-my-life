@@ -660,14 +660,24 @@ function drawCalendar(dataset, highlight) {
                 .attr('opacity', '.85');
             let curRect = d3.select(this);
 
-            g.append("text")
+            let tTip = g.append("text")
                 .attr("id","tooltip")
                 .attr("x",+curRect.attr("x") + (curRect.attr("width")/2))
                 .attr("y",(+curRect.attr("y") + curRect.attr("height")/2)+3) // +3 for font size
                 //TODO: make a g element for each rect so that we can dynamically center
                 // the text.
                 .text(curRect.attr("date"))
-                .style("text-anchor", "middle")
+                .classed("tooltip",true)
+                .attr("pointer-events","none");
+            let tBBox = tTip.node().getBBox();
+            let padding = 4;
+            g.insert("rect","#tooltip")
+                .attr("id","tooltip")
+                .attr("x",tBBox.x-padding)
+                .attr("y",tBBox.y-padding)
+                .attr("width", tBBox.width+(padding*2))
+                .attr("height", tBBox.height+(padding*2))
+                .style("fill","white")
                 .attr("pointer-events","none");
             // svg.append("g")
             //     .attr("id","tooltip")
@@ -682,7 +692,7 @@ function drawCalendar(dataset, highlight) {
             d3.select(this).transition()
             .duration('50')
             .attr('opacity', d3.select(this).attr("original_oppy"));
-            svg.select("#tooltip").remove();
+            svg.selectAll("#tooltip").remove();
         });
 
 

@@ -179,3 +179,7 @@ text {
   background-position: center;
   background-size: cover;
 }
+
+.tooltip {
+  text-anchor: middle;
+}
