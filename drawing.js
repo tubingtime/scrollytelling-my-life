@@ -553,7 +553,6 @@ function drawBarsWork(dataset, barPadding, customMax) {
 }
 
 function drawCalendar(dataset, highlight) {
-
     let catScale = d3.scaleOrdinal(d3.schemeCategory10)
     let myColorMap = {
         Calm: "#3498db",
@@ -561,8 +560,8 @@ function drawCalendar(dataset, highlight) {
         Groggy: "#d35400",
         Anxious: "#8e44ad",
     };
-    var myColor = d3.scaleOrdinal().domain(["Calm", "Excited", "Groggy", "Anxious"])
-        .range(["#3498db", "#2ecc71", "#d35400", "#8e44ad"])
+    var myColor = d3.scaleOrdinal().domain(["Calm", "Groggy", "Anxious"])
+        .range(["#3498db", "#d35400", "#8e44ad"])
     let xScale = d3.scaleLinear()
         .domain([0, 7])   // Data space
         .range([0, svgInnerWidth]); // Pixel space
@@ -650,16 +649,30 @@ function drawCalendar(dataset, highlight) {
                     break;
             }
         })
+        .attr("date",function (d) {
+            return (d.date[0]+"/"+d.date[1]+"/"+d.date[2]);
+        })
         .style("stroke-width","5")
         .on('mouseover', function (response) {
             // console.log(response)
             d3.select(this).transition()
                 .duration('50')
                 .attr('opacity', '.85');
+            let curRect = d3.select(this);
+
+            g.append("text")
+                .attr("id","tooltip")
+                .attr("x",+curRect.attr("x") + (curRect.attr("width")/2))
+                .attr("y",(+curRect.attr("y") + curRect.attr("height")/2)+3) // +3 for font size
+                //TODO: make a g element for each rect so that we can dynamically center
+                // the text.
+                .text(curRect.attr("date"))
+                .style("text-anchor", "middle")
+                .attr("pointer-events","none");
             // svg.append("g")
             //     .attr("id","tooltip")
             //     .append("rect")
-            //     .attr("x",response.layerX)
+            //     .attr("x",curRect.attr("x"))
             //     .attr("y",50)
             //     .attr("height",50)
             //     .attr("width",50)
@@ -669,13 +682,8 @@ function drawCalendar(dataset, highlight) {
             d3.select(this).transition()
             .duration('50')
             .attr('opacity', d3.select(this).attr("original_oppy"));
-            svg.select("#tooltip rect").remove()
-        
-        })
-        .append("svg:title") 
-            .text(function (d) {
-                return (d.date[0]+"/"+d.date[1]+"/"+d.date[2]);
-            });
+            svg.select("#tooltip").remove();
+        });
 
 
     let labels = g.selectAll("xLabel")
