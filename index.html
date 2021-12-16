@@ -1,22 +1,125 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <link rel="stylesheet" href="styles.css">
-    <title>TJ ScrollyTold</title>
-    <script src="https://d3js.org/d3.v6.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.js"></script>
-    <script src="bar.js"></script>
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>TJ SCROLLYTOLD</title>
+    <meta name="description" content="Scrollama: Sticky Side Example" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="scrollystyle.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"> 
+  </head>
 
-<body>
-<h1>Scrollytelling my life</h1>
-<h2>Author: <a class="notb">TJ de Laveaga</a></h2>
-<h2>Description: <a class="notb">This project is heavily inspired by the dear data project.
-    I will be collecting extensive data about myself for a week and then making various
-    visualizations out of it, and explaining the different patterns in my life through
-    scrollytelling.
-</a></h2>
-<h2>Alpha Release: <a href="https://raw.githubusercontent.com/tubingtime/scrollytelling-my-life/main/Alpha-Release.pdf">Alpha-Release.pdf</a></h2> 
-<svg></svg>
-</body>
+  <body>
+
+    <main>
+      <section id="intro">
+        <h1 class="intro__hed">TJ Scrollytold</h1>
+        <p class="intro__dek">
+          My november in data
+        </p>
+      </section>
+      
+      <section id="intro">
+        <p>Hi! My name is TJ.<br> I decided to collect data on myself for a couple weeks to learn about myself but mostly to make some cool graphs out of it.<br>
+          <br>
+          Start scrolling to see them!
+        </p>
+      </section>
+
+      <section id="scrolly">
+        <article>
+          <div class="step" data-step="1">
+            <p class="step__header">How I felt after waking up and going to sleep 
+              <br>(Nov 1 - Nov 13)</p>
+            <p class="step__desc">This is a calendar of my mood. I started out with
+              6 catagories but only ended up using 3. 
+              <br>You can hover over the squares to see the exact dates.
+            </p>
+          </div>
+          <div class="step" data-step="2">
+            <p class="step__desc">During the first week I got the cold which is why I felt groggy most of the time.
+            </p>
+          </div>
+          <div class="step" data-step="3">
+            <p class="step__desc">The symptoms of my cold went away around Friday but missing class 
+              for a week left me behind on work and feeling anxious for the rest of the week.
+            </p>
+          </div>
+          <div class="step" data-step="4">
+            <p class="step__desc">Yay! I started feeling better here. I was able to get a lot done over the weekend, and being sick gave me a new appreciation
+              for being healthy!
+            </p>
+          </div>
+          
+          <div class="step" data-step="5">
+            <p class="step__header">Time Tracking <br>(Nov 8 - Nov 14)</p>
+            <p class="step__desc">I tracked how I spent my time each day. I used a tool called "Toggl Track"
+              to log time entries each day. <br>
+              In terms of data collection, this was definitely the most work. It was challenging to remember to log tasks after I was done.
+              Often I would forget and at the end of the day I would have to try and piece together what I did. So this data is definitely
+              not perfect.
+            </p>
+          </div>
+          <div class="step" data-step="6">
+            <p class="step__header">Work Breakdown <br>(Nov 8 - Nov 14)</p>
+            <p class="step__desc">This is a breakdown of that work category seen in the last section <br>
+              As you can see my biggest time sink was this class :p
+              <br> The personal category was me applying for jobs and maintaining my home media server.
+            </p>
+          </div>
+          <div class="step" data-step="7">
+            <p class="step__header">Actual Data</p>
+            <p class="step__desc">This is a screenshot of Toggltrack, the tool I used to collect the temporal
+              data.
+              <br>Some of the small gaps are because I didn't record my commute time because I knew it's about 30 minutes each day.
+              <br>But most of the gaps are because I forgot to record the data.
+            </p>
+          </div>
+          <div class="step" data-step="8">
+            <p class="step__header">Water Consumption </p>
+            <p class="step__desc">How much water I drank each day.
+              <br>I think that I'm falling below the recommended amount because I get my water from food and other drinks.
+              <br>You can also see that I drank much less water than usual from Nov 1 - Nov 6 because I was sick during
+              that week.
+              
+              <br><br><strong>Note:</strong> There is data missing on Nov. 6 & Nov. 7. I decided to leave them blank rather
+              than make up data to tell a more honest story.
+              
+            </p>
+          </div>
+        </article>
+        <figure>
+        </figure>
+      </section>
+
+      <section id="outro">
+        <h2><u>Reflection</u></h2>
+        <br>
+        <p>So what did I learn from all this?
+          Well for one data collection is not easy! I was planning on collecting data for a whole month
+          but I'm glad I limited it to only two weeks. Although it would be a lot more insightful to have a month
+          or a years worth of data. It's hard to observe patterns in my life with such limited data. If I could set
+          up an easy way to collect data it might be possible to get a years worth. With that being said here's what
+          patterns I did notice.
+          <br>
+          Doing this also made me wonder how it is people do 60-80 hour workdays!
+          During the week I collected data I worked for only about 30 hours and I felt like any more
+          and it would be too much.
+          <br>
+
+        </p>
+      </section>
+    </main>
+
+    <!-- javascript libraries -->
+    <script src="https://unpkg.com/d3@7.2.0/dist/d3.min.js"></script>
+    <script src="https://unpkg.com/intersection-observer@0.5.1/intersection-observer.js"></script>
+    <script src="stickyfill.min.js"></script>
+    <script src="scrollama.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js"></script>
+    <!-- my graphs -->
+    <script src="drawing.js"></script>
+  </body>
 </html>
