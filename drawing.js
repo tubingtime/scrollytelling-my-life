@@ -348,7 +348,7 @@ function handleStepEnter(response) {
         return;
     }
     currentStep.index = response.index;
-    
+    // console.log(response.index);
     // add color to current step only
     step.classed("is-active", function (d, i) {
         return i === response.index;
