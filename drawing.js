@@ -5,13 +5,14 @@ var article = scrolly.select("article");
 var step = article.selectAll(".step");
 var w = window.innerWidth / 1.2;
 var h = window.innerHeight / 1.7;
-const margin = { top: 40, bottom: 60, left: 50, right: 50 }
+const margin = { top: 40, bottom: 60, left: 50, right: 50 } //graph margin for axis labels
 var svgInnerWidth = w - margin.left - margin.right;
 var svgInnerHeight = h - margin.top - margin.bottom;
 var svg = figure.append("svg");
 let currentStep = {
     "index" : -1
 }
+// Declare data
 const timeSpentWithSleep = [
     {
         "task": "Work",
@@ -317,7 +318,7 @@ var scroller = scrollama();
 
 // generic window resize listener event
 function handleResize() {
-    // 1. update height of step elements
+    // update height of step elements
     var stepH = Math.floor(window.innerHeight * 0.5);
     step.style("min-height", stepH + "px");
 
@@ -325,37 +326,35 @@ function handleResize() {
     var figureMarginTop = (window.innerHeight - figureHeight) / 2;
     figure
         .style("height", figureHeight + "px")
-        .style("top", figureMarginTop + "px"); // TODO: update figure svg on resize
+        .style("top", figureMarginTop + "px"); 
     
-
-    w = figure.style("width").slice(0,-2);
+    // update svg element size
+    w = figure.style("width").slice(0,-2); //.slice the "px" suffix
     h = Math.floor(window.innerHeight / 1.7);
     svgInnerWidth = w - margin.left - margin.right;
     svgInnerHeight = h - margin.top - margin.bottom;
     svg
         .attr("height", h)
         .attr("width", w);
-    handleStepEnter(currentStep);
-    // 3. tell scrollama to update new element dimensions
+    handleStepEnter(currentStep); //redraw svg
+    // tell scrollama to update new element dimensions
     scroller.resize();
 }
 
 // scrollama event handlers
 function handleStepEnter(response) {
+    // response = { element, direction, index }
     if (response.index == -1){
         return;
     }
     currentStep.index = response.index;
-    // response = { element, direction, index }
-
+    
     // add color to current step only
     step.classed("is-active", function (d, i) {
         return i === response.index;
     });
-    console.log("hereye?"+currentStep.index)
-    // update graphic based on step
-    figure.select('svg').selectAll('*').remove();
-    // figure.select("p").text(response.index + 1);
+    // update graphic based on what step were are in
+    figure.select('svg').selectAll('*').remove(); //clear canvas
     switch (response.index) {
         case 0:
             drawCalendar(calendarData, 0);
@@ -370,16 +369,16 @@ function handleStepEnter(response) {
             drawCalendar(calendarData, 3);
             break;
         case 4:
-            drawBars(timespent, 50, 30);
+            drawBars(timespent, 30);
             break;
         case 5:
-            drawBarsWork(classes,50,10);
+            drawBarsWork(classes,10);
             break;
         case 6:
-            insertJPG("toggltrack1.jpg");
+            insertJPG("toggltrack.jpg");
             break;
         case 7:
-            drawWaterBars(sippingData,50);
+            drawWaterBars(sippingData);
             break;
         default:
             break;
@@ -394,7 +393,7 @@ function setupStickyfill() {
 }
 
 function init() {
-    setupStickyfill();
+    setupStickyfill(); // I think this is not needed in newer versions of scrollama
 
     // 1. force a resize on load to ensure proper dimensions are sent to scrollama
     handleResize();
@@ -406,7 +405,7 @@ function init() {
         .setup({
             step: "#scrolly article .step",
             offset: 0.33,
-            debug: false
+            debug: false //draws line to show where step enter is called.
         })
         .onStepEnter(handleStepEnter)
 
@@ -417,6 +416,8 @@ function init() {
 // kick things off
 init();
 
+//function to draw horizontal lines for bar charts
+//takes a d3 axisLeft and a g element to append the lines to
 function drawYGrid(yAxis, gElem){
     var yAxisGrid = yAxis.ticks()
         .tickSizeOuter(0)
@@ -429,7 +430,8 @@ function drawYGrid(yAxis, gElem){
         .remove();
 }
 
-function drawBars(dataset, barPadding, customMax) {
+//function to draw time spent data
+function drawBars(dataset, customMax) {
     let max = customMax;
     const g = svg.append('g')
         .attr('transform', `translate(${margin.left}, ${margin.top})`)
@@ -450,11 +452,10 @@ function drawBars(dataset, barPadding, customMax) {
     g.append('g').call(xAxis)
         .attr('transform', `translate(0,${svgInnerHeight})`) // move axis to bottom
         .append('text')
-        .text("XPD")
         .attr('class', 'label')
         .attr("dy", 10);
-    
-    drawYGrid(yAxis,g);
+
+    drawYGrid(yAxis, g);
 
     let rects = g.selectAll("rect")
         .data(dataset)
@@ -462,26 +463,24 @@ function drawBars(dataset, barPadding, customMax) {
         .append("rect");
 
     rects.attr("x", function (d) {
-        return xScale(d.task) + 0; //not sure why i need + 30 here (i think it has to do with barwidth func )
-    })
+        return xScale(d.task);
+        })
         .attr("y", function (d) {
-            // console.log(d.time)
-            // console.log(yScale(d.time))
             return yScale(d.time)
         })
         .attr("height", function (d) {
             return svgInnerHeight - yScale(d.time);
         })
-        .attr("width", xScale.bandwidth()) // this is problematic
+        .attr("width", xScale.bandwidth())
         .attr("fill", function (d) {
             return catScale(d.task);
-        })
+        });
     // draw scale
     svg.append("g")
         .attr("class", "colorLegend")
-        .attr("transform", `translate(${svgInnerWidth/2},${margin.top})`);
+        .attr("transform", `translate(${svgInnerWidth / 2},${margin.top})`);
     let colorLegend = d3.legendColor()
-        .shapeWidth(xScale.bandwidth()/2)
+        .shapeWidth(xScale.bandwidth() / 2)
         .orient('horizontal')
         .cells(5)
         .labelOffset(-28)
@@ -498,7 +497,8 @@ function drawBars(dataset, barPadding, customMax) {
         .text("Task")
 }
 
-function drawBarsWork(dataset, barPadding, customMax) {
+//function to draw time spent working data
+function drawBarsWork(dataset, customMax) {
     let max = customMax;
     const g = svg.append('g')
         .attr('transform', `translate(${margin.left}, ${margin.top})`)
@@ -519,10 +519,8 @@ function drawBarsWork(dataset, barPadding, customMax) {
     g.append('g').call(xAxis)
         .attr('transform', `translate(0,${svgInnerHeight})`) // move axis to bottom
         .append('text')
-        .text("XPD")
         .attr('class', 'label')
-
-        .attr("dy", 10)
+        .attr("dy", 10);
 
     drawYGrid(yAxis,g);
     let rects = g.selectAll("rect")
@@ -531,17 +529,15 @@ function drawBarsWork(dataset, barPadding, customMax) {
         .append("rect");
 
     rects.attr("x", function (d) {
-        return xScale(d.task) + 0; //not sure why i need + 30 here (i think it has to do with barwidth func )
-    })
+        return xScale(d.task);
+        })
         .attr("y", function (d) {
-            // console.log(d.time)
-            // console.log(yScale(d.time))
             return yScale(d.time)
         })
         .attr("height", function (d) {
             return svgInnerHeight - yScale(d.time);
         })
-        .attr("width", xScale.bandwidth()) // this is problematic
+        .attr("width", xScale.bandwidth()) 
         .attr("fill", "#1f77b4")
     //draw lables
     var labely = g.append("text")
@@ -551,25 +547,132 @@ function drawBarsWork(dataset, barPadding, customMax) {
         .attr("transform", `translate(${svgInnerWidth / 2 - (margin.left + margin.right)},${svgInnerHeight + 40})`)
         .text("Type of Work")
 }
+function drawWaterBars(dataset) {
+    let max = 200;
+    const g = svg.append('g')
+        .attr('transform', `translate(${margin.left+5}, ${margin.top})`)
+    let catScale = d3.scaleOrdinal(d3.schemeCategory10)
+    let xScale = d3.scaleBand()
+        .domain(dataset.map(d => d.date))   // Data space
+        .range([10, svgInnerWidth]); // Pixel space
+    
+    let paddedExtent = [
+        d3.min(dataset.map(d => d.date)), 
+        d3.max(dataset.map(d => d.date))
+    ];
+    let xScaleTime = d3.scaleTime()
+        .domain(paddedExtent)   // Data space
+        .range([0, svgInnerWidth]); // Pixel space 
+    let yScale = d3.scaleLinear()
+        .domain([0, max])   // Data space
+        .range([svgInnerHeight, 0]); // Pixel space
 
+
+    var xAxis = d3.axisBottom(xScaleTime);
+
+    var yAxis = d3.axisLeft(yScale);
+    g.append('g')
+        .call(yAxis)
+    g.append('g').call(xAxis)
+        .attr('transform', `translate(0,${svgInnerHeight})`); // move axis to bottom
+    drawYGrid(yAxis,g);
+    
+    let rects = g.selectAll("rect")
+        .data(dataset)
+        .enter()
+        .append("rect");
+
+    rects.attr("x", function (d) {
+        return xScaleTime(d.date); 
+        })
+        .attr("y", function (d) {
+            return yScale(d.water)
+        })
+        .attr("height", function (d) {
+            return svgInnerHeight - yScale(d.water);
+        })
+        .attr("width", xScale.bandwidth()) 
+        .attr("fill", "steelblue");
+    // draw scale
+    svg.append("g")
+        .attr("class", "colorLegend")
+        .attr("transform", `translate(${svgInnerWidth/2},${margin.top})`);
+    let colorLegend = d3.legendColor()
+        .shapeWidth(80)
+        .orient('horizontal')
+        .cells(5)
+        .scale(catScale);
+    svg.select(".colorLegend")
+        .call(colorLegend);
+
+    //draw lables
+    var labely = g.append("text")
+        .attr("transform", `translate(-40,${h / 2})rotate(-90)`)
+        .text("Water Consumed (oz)")
+    var labelx = g.append("text")
+        .attr("transform", `translate(${svgInnerWidth / 2 - (margin.left + margin.right)},${svgInnerHeight + 40})`)
+        .text("Date")
+    let NAS = g.append("rect")
+        .attr("x",0)
+        .attr("y",yScale(125))
+        .attr("width",svgInnerWidth)
+        .attr("height",2)
+        .attr("fill","#c0392b");
+    var NASLabel = g.append("text")
+        .style("fill", "#c0392b")
+        .attr("transform", `translate(${100},${yScale(125) - 2})`)
+        .text("NAS reccomended amount for men");
+    //annotation
+    const annotations = [{
+        note: {
+            label: "I forgot to record data here."
+        },
+        //can use x, y directly instead of data
+        data: { date: "11/06/21", close: 0 },
+        dy: -yScale(125),
+        dx: xScale.bandwidth()/3,
+        subject: {
+            width: xScale.bandwidth()*2+(xScale.bandwidth()*.11),
+            height: yScale(60)-yScale(0)
+        }
+    }]
+    //draw annotations
+    var makeAnnotations = d3.annotation()
+        .editMode(false)
+        //also can set and override in the note.padding property
+        //of the annotation object
+        .notePadding(15)
+        .type(d3.annotationCalloutRect)
+        //accessors & accessorsInverse not needed
+        //if using x, y in annotations JSON
+        .accessors({
+            x: d => xScaleTime(parseTime(d.date)),
+            y: d => yScale(d.close),
+        })
+        .accessorsInverse({
+            date: d => timeFormat(xScaleTime.invert(d.x)),
+            close: d => yScale.invert(d.y)
+        })
+        .annotations(annotations)
+
+    g.append("g")
+        .attr("class", "annotation-group")
+        .call(makeAnnotations)
+
+}
+//function to draw feeling calendar
 function drawCalendar(dataset, highlight) {
     let catScale = d3.scaleOrdinal(d3.schemeCategory10)
-    let myColorMap = {
-        Calm: "#3498db",
-        Excited: "#2ecc71",
-        Groggy: "#d35400",
-        Anxious: "#8e44ad",
-    };
     var myColor = d3.scaleOrdinal().domain(["Calm", "Groggy", "Anxious"])
         .range(["#3498db", "#d35400", "#8e44ad"])
     let xScale = d3.scaleLinear()
-        .domain([0, 7])   // Data space
+        .domain([0, 7])   // Data space (one week)
         .range([0, svgInnerWidth]); // Pixel space
     let xScaleBand = d3.scaleBand()
-        .domain([0, 1, 2, 3, 4, 5, 6])   // Data space
+        .domain([0, 1, 2, 3, 4, 5, 6])   // Data space (one week)
         .range([0, svgInnerWidth]); // Pixel space
     let yScale = d3.scaleLinear()
-        .domain([4, 0])   // Data space
+        .domain([4, 0])   // Data space 
         .range([svgInnerHeight, 0]); // Pixel space
     let yScaleBand = d3.scaleBand()
         .domain([3, 2, 1, 0])   // Data space
@@ -589,7 +692,7 @@ function drawCalendar(dataset, highlight) {
 
     rects.attr("x", function (d) {
         return xScale((d.date[1] - 1) % 7);
-    })
+        })
         .attr("y", function (d) {
             let weekNum = Math.floor(d.date[1] / 8)
             weekNum = weekNum * 2;
@@ -608,20 +711,17 @@ function drawCalendar(dataset, highlight) {
         .attr("fill", function (d) {
             return myColor(d.mood);
         })
-        // .attr("debug", function (d) {
-        //     return d.date; //todo: remove
-        // })
         .attr("opacity",function(d){
-            switch (highlight){
+            switch (highlight){ //highlight different areas of the calendar
                 case 1:
                     if (d.date[1] < 4) {return "1";}
                     else {return ".5"}
                     break;
-                case 2:
+                case 2: 
                     if (d.date[1] >= 4 && d.date[1] < 8){return "1";}
                     else {return ".5"}
                     break;
-                case 3:
+                case 3: 
                     if (d.date[1] >= 8 && d.date[1] < 11){return "1";}
                     else {return ".5"}
                     break;
@@ -650,7 +750,7 @@ function drawCalendar(dataset, highlight) {
             }
         })
         .attr("date",function (d) {
-            return (d.date[0]+"/"+d.date[1]+"/"+d.date[2]);
+            return (d.date[0]+"/"+d.date[1]+"/"+d.date[2]); //make date readable format
         })
         .style("stroke-width","5")
         .on('mouseover', function (response) {
@@ -668,10 +768,10 @@ function drawCalendar(dataset, highlight) {
                 // the text.
                 .text(curRect.attr("date"))
                 .classed("tooltip",true)
-                .attr("pointer-events","none");
+                .attr("pointer-events","none"); //so that our tooltip doesn't trigger the calendar rect's "mouseout"
             let tBBox = tTip.node().getBBox();
             let padding = 4;
-            g.insert("rect","#tooltip")
+            g.insert("rect","#tooltip") //text border
                 .attr("id","tooltip")
                 .attr("x",tBBox.x-padding)
                 .attr("y",tBBox.y-padding)
@@ -679,14 +779,6 @@ function drawCalendar(dataset, highlight) {
                 .attr("height", tBBox.height+(padding*2))
                 .style("fill","white")
                 .attr("pointer-events","none");
-            // svg.append("g")
-            //     .attr("id","tooltip")
-            //     .append("rect")
-            //     .attr("x",curRect.attr("x"))
-            //     .attr("y",50)
-            //     .attr("height",50)
-            //     .attr("width",50)
-            //     .attr("fill","red")
         })
         .on('mouseout', function () {
             d3.select(this).transition()
@@ -730,133 +822,13 @@ function drawCalendar(dataset, highlight) {
         .scale(myColor);
     svg.select(".colorLegend")
         .call(colorLegend);
-    
-
 }
-function drawWaterBars(dataset, barPadding) {
-    let max = 200;
-    const g = svg.append('g')
-        .attr('transform', `translate(${margin.left+5}, ${margin.top})`)
-    let catScale = d3.scaleOrdinal(d3.schemeCategory10)
-    let xScale = d3.scaleBand()
-        .domain(dataset.map(d => d.date))   // Data space
-        .range([10, svgInnerWidth]); // Pixel space
-    
-    let paddedExtent = [
-        d3.min(dataset.map(d => d.date)), 
-        d3.max(dataset.map(d => d.date))
-    ];
-    let xScaleTime = d3.scaleTime()
-        .domain(paddedExtent)   // Data space
-        .range([0, svgInnerWidth]); // Pixel space 
-    let yScale = d3.scaleLinear()
-        .domain([0, max])   // Data space
-        .range([svgInnerHeight, 0]); // Pixel space
 
-
-    var xAxis = d3.axisBottom(xScaleTime);
-
-    var yAxis = d3.axisLeft(yScale);
-    g.append('g')
-        .call(yAxis)
-    g.append('g').call(xAxis)
-        .attr('transform', `translate(0,${svgInnerHeight})`); // move axis to bottom
-    drawYGrid(yAxis,g);
-    
-    let rects = g.selectAll("rect")
-        .data(dataset)
-        .enter()
-        .append("rect");
-
-    rects.attr("x", function (d) {
-        return xScaleTime(d.date); 
-    })
-        .attr("y", function (d) {
-            // console.log(d.time)
-            // console.log(yScale(d.time))
-            return yScale(d.water)
-        })
-        .attr("height", function (d) {
-            return svgInnerHeight - yScale(d.water);
-        })
-        .attr("width", xScale.bandwidth()) // this is problematic
-        .attr("fill", "steelblue");
-    // draw scale
-    svg.append("g")
-        .attr("class", "colorLegend")
-        .attr("transform", `translate(${svgInnerWidth/2},${margin.top})`);
-    let colorLegend = d3.legendColor()
-        .shapeWidth(80)
-        .orient('horizontal')
-        .cells(5)
-        .scale(catScale);
-    svg.select(".colorLegend")
-        .call(colorLegend);
-
-    //draw lables
-    var labely = g.append("text")
-        .attr("transform", `translate(-40,${h / 2})rotate(-90)`)
-        .text("Water Consumed (oz)")
-    var labelx = g.append("text")
-        .attr("transform", `translate(${svgInnerWidth / 2 - (margin.left + margin.right)},${svgInnerHeight + 40})`)
-        .text("Date")
-    let NAS = g.append("rect")
-        .attr("x",0)
-        .attr("y",yScale(125))
-        .attr("width",svgInnerWidth)
-        .attr("height",2)
-        .attr("fill","#c0392b");
-    var NASLabel = g.append("text")
-        .style("fill", "#c0392b")
-        .attr("transform", `translate(${100},${yScale(125) - 2})`)
-        .text("NAS reccomended amount for men");
-    //annotations
-    const annotations = [{
-        note: {
-            label: "I forgot to record data here."
-        },
-        //can use x, y directly instead of data
-        data: { date: "11/06/21", close: 0 },
-        dy: -yScale(125),
-        dx: xScale.bandwidth()/3,
-        subject: {
-            width: xScale.bandwidth()*2+(xScale.bandwidth()*.11),
-            height: yScale(60)-yScale(0)
-        }
-    }]
-    console.log(xScale.padding())
-    //draw annotations
-    var makeAnnotations = d3.annotation()
-        .editMode(false)
-        //also can set and override in the note.padding property
-        //of the annotation object
-        .notePadding(15)
-        .type(d3.annotationCalloutRect)
-        //accessors & accessorsInverse not needed
-        //if using x, y in annotations JSON
-        .accessors({
-            x: d => xScaleTime(parseTime(d.date)),
-            y: d => yScale(d.close),
-        })
-        .accessorsInverse({
-            date: d => timeFormat(xScaleTime.invert(d.x)),
-            close: d => yScale.invert(d.y)
-        })
-        .annotations(annotations)
-
-    g.append("g")
-        .attr("class", "annotation-group")
-        .call(makeAnnotations)
-
-
-
-
-}
 function insertJPG(imageUrl){
     svg.append("image")
     .attr("id","imgZoom")
-    .attr("zoom","300%")
-    .attr("xlink:href","toggltrack.jpg")
+    .attr("xlink:href",imageUrl)
     .attr("width","100%")
-    .attr("height","100%");
+    .attr("height","100%"); 
+    //TODO: add zoom
 }
